@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# man on russian language
+# Usage:
+#	crowman realloc
+
+
+text=$(man $*)
+crow -b -s en -t ru "$text" | less -R

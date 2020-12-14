@@ -1,0 +1,29 @@
+#!/usr/bin/python
+
+# used for creation of workspace in i3
+# Usage:
+#   bind program on alt+c in i3
+
+
+import os
+
+workspaceFile = open("/tmp/workspace-data", "a+")
+
+workspaceFile.seek(0)
+
+workspacePrevData = workspaceFile.read()
+
+if workspacePrevData == "":
+    workspacePrevNumber = 5
+else:
+    workspacePrevNumber = int(workspacePrevData)
+
+workspaceNextNumber = workspacePrevNumber + 1
+workspaceNextText = str(workspaceNextNumber) + ":new"
+
+code = os.spawnvp(os.P_WAIT, "i3-msg", ["i3-msg", "workspace", workspaceNextText])
+
+workspaceFile.seek(0)
+workspaceFile.truncate()
+workspaceFile.write(str(workspaceNextNumber))
+

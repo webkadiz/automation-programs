@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# start program in background
+
+
+$* > /dev/null 2> /dev/null &

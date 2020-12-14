@@ -1,0 +1,18 @@
+#!/usr/bin/python
+
+# passes through mmdc all files in current dir
+
+
+import os
+import sys
+
+if len(sys.argv) > 1:
+    entry = sys.argv[1]
+    os.spawnvp(os.P_WAIT, "mmdc", ["mmdc", "-i", entry, "-o", entry + ".png"])
+else:
+    for entry in os.listdir():
+        if os.path.splitext(entry)[1]: continue
+
+        os.spawnvp(os.P_WAIT, "mmdc", ["mmdc", "-i", entry, "-o", entry + ".png"])
+
+

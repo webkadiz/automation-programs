@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# simple gui for translate text from en to ru
+# Usage:
+#	bind on alt+t
+
+
+zenity --entry --width 400 --height 200 | crow -s en -t ru -i -b 2> /dev/null > /tmp/translate
+cat /tmp/translate | zenity --text-info --width 400 --height 200

@@ -1,0 +1,21 @@
+#!/usr/bin/env python3
+
+# use:
+#   rmtex [begining of tex files]
+#
+# example:
+#   rmtex report.
+#
+# It remove all trash files besides report.tex and report.pdf
+
+
+import os
+import sys
+
+
+texBaseName = sys.argv[1]
+
+for entity in os.listdir():
+        extName = os.path.splitext(entity)[1]
+        if entity.startswith(texBaseName) and extName != ".tex" and extName != ".pdf":
+            os.unlink(entity)

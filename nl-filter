@@ -1,0 +1,16 @@
+#!/usr/bin/python
+
+# used for replace token "nl" on "\n" (newline)
+# used for C macroprocessor
+# Usage:
+#   cat file.macro | nl-filter
+
+
+stdin = open(0)
+
+inputText = stdin.read()
+
+inputReplaced = inputText.replace("nl ", "\n")
+inputReplaced = inputReplaced.replace("nl", "\n")
+
+print(inputReplaced)

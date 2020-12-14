@@ -1,0 +1,25 @@
+#!/usr/bin/python
+
+# it generates report for labs in university
+# must have /usr/local/share/gen-report/report-template.text file
+
+
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument("lab-num", help="number of lab", type=int)
+parser.add_argument("lab-name", help="name of lab", type=str)
+args = vars(parser.parse_args())
+
+reportFile = open("/usr/local/share/gen-report/report-template.tex", "r")
+reportText = reportFile.read()
+
+posOfNumberLab = reportText.find(chr(8470)) # №
+reportText = reportText[:posOfNumberLab+1] + str(args["lab-num"]) + reportText[posOfNumberLab+2:]
+
+posOfBeginingLabName = reportText.find(chr(171), posOfNumberLab) # open quote
+posOfEndingLabName = reportText.find(chr(187), posOfNumberLab) # close quote
+reportText = reportText[:posOfBeginingLabName+1] + args["lab-name"] + reportText[posOfEndingLabName:]
+
+reportNewFile = open("report-lab" + str(args["lab-num"]) + ".tex", "w")
+reportNewFile.write(reportText)

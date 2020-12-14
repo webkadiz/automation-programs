@@ -1,0 +1,32 @@
+#!/usr/bin/python
+
+# used for rename a workspace in i3
+# Usage:
+#   renamew "3:new_name" - for rename current workspace
+#   renamew "3:old_name" "3:new_name" - for rename another workspace
+
+
+import os
+import sys
+
+if len(sys.argv) == 3:
+    oldWorkspaceName = sys.argv[1]
+    newWorkspaceName = sys.argv[2]
+
+    code = os.spawnvp(os.P_WAIT, "i3-msg", ["i3-msg", 'rename workspace "{}" to "{}"'.format(oldWorkspaceName, newWorkspaceName)])
+
+elif len(sys.argv) == 2:
+    newWorkspaceName = sys.argv[1]
+
+    code = os.spawnvp(os.P_WAIT, "i3-msg", ["i3-msg", 'rename workspace to "{}"'.format(newWorkspaceName)])
+
+else:
+    print("Set new workspace name")
+    exit(1)
+
+
+if code == 0:
+    exit(0)
+else:
+    print("Somethin was wrong")
+    exit(1)
