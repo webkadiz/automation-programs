@@ -1,0 +1,3 @@
+#!/bin/bash
+
+run google-chrome-stable --app=https://ticktick.com/webapp/\#q/all/tasks
