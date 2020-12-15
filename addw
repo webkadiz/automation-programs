@@ -14,7 +14,7 @@ workspaceFile.seek(0)
 workspacePrevData = workspaceFile.read()
 
 if workspacePrevData == "":
-    workspacePrevNumber = 5
+    workspacePrevNumber = 6
 else:
     workspacePrevNumber = int(workspacePrevData)
 
