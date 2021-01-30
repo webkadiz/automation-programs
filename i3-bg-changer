@@ -1,0 +1,107 @@
+#!/usr/bin/python
+
+import os
+import re
+
+
+options = {
+    "picturesPath": os.path.join(os.environ["HOME"], "Pictures"),
+    "i3ConfigPath": os.path.join(os.environ["HOME"], ".config/i3/config"),
+    "bgDataPath": "/tmp/bg-data"
+}
+
+
+def getImageList():
+    pngImages = [
+        imgFilename
+        for imgFilename in os.listdir(options["picturesPath"])
+        if os.path.splitext(imgFilename)[1] == ".png"
+    ]
+
+    return pngImages
+
+
+def getCurrentImageIndex():
+    try:
+        index = open(options["bgDataPath"]).read()
+    except:
+        index = "0"
+
+    if bool(index) == False:
+        index = "0"
+
+    return index
+
+
+def getNewImageIndex(curIdx):
+    curIdx = int(curIdx)
+
+    images = getImageList()
+
+    try:
+        newIdx = (curIdx + 1) % len(images)
+    except:
+        print("Directory with files is empty")
+        exit(1)
+
+    memNewImageIndex(newIdx)
+
+    return newIdx
+
+
+def memNewImageIndex(newIdx):
+    newIdx = str(newIdx)
+
+    open(options["bgDataPath"], "w").write(newIdx)
+
+    return newIdx
+
+
+def getNewImagePath(newIdx):
+    newIdx = int(newIdx)
+
+    images = getImageList()
+    image = images[newIdx]
+
+    newImagePath = os.path.join(options["picturesPath"], image)
+
+    return newImagePath
+
+
+def makei3ConfigNew(newImagePath):
+    i3ConfigFile = open(options["i3ConfigPath"])
+    i3ConfigFileContent = i3ConfigFile.read()
+    i3ConfigNew = re.sub(
+        "\$bg.*/.*\n", f"$bg {newImagePath} \n", i3ConfigFileContent
+    )
+    i3ConfigFile.close()
+
+    return i3ConfigNew, newImagePath
+
+
+def writei3ConfigNew(i3ConfigNew, newImagePath):
+    i3ConfigFileNew = open(options["i3ConfigPath"], "w")
+    i3ConfigFileNew.write(i3ConfigNew)
+    i3ConfigFileNew.close()
+
+    return newImagePath
+
+
+def reloadi3Config(newImagePath):
+    os.system(f"feh --bg-scale --zoom fill {newImagePath}")
+    os.system("i3 reload")
+
+
+reloadi3Config(
+    writei3ConfigNew(
+        *makei3ConfigNew(
+            getNewImagePath(
+                memNewImageIndex(
+                    getNewImageIndex(
+                        getCurrentImageIndex()
+                    )
+                )
+            )
+        )
+    )
+)
