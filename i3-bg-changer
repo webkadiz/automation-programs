@@ -88,9 +88,8 @@ def writei3ConfigNew(i3ConfigNew, newImagePath):
 
 
 def reloadi3Config(newImagePath):
-    os.system(f"feh --bg-scale --zoom fill {newImagePath}")
-    os.system("i3 reload")
-
+    os.system(f"export DISPLAY=:0; feh --bg-scale --zoom fill {newImagePath}")
+    os.system("export DISPLAY=:0; i3 reload")
 
 reloadi3Config(
     writei3ConfigNew(
