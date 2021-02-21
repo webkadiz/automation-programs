@@ -1,0 +1,85 @@
+#!/usr/bin/env python
+
+# double folder with unfold symlinks for android
+
+import sys
+import os
+
+
+def getRealDirParent(path):
+    parentPath = os.path.split(path)[0]
+
+    if os.path.islink(parentPath):
+        return getRealDirParent(parentPath)
+    else:
+        return parentPath
+
+
+# flow functions
+
+def getFolderForDoubling(state):
+    try:
+        state["folderPathForDoubling"] = sys.argv[1]
+        state["folderPathDoubling"] = state.get(
+            "folderPathForDoubling") + "Android"
+
+        return state
+    except:
+        print("set directory for doubling")
+        exit(1)
+
+
+def isDir(state):
+    if os.path.isdir(state.get("folderPathForDoubling")):
+        return state
+    else:
+        folderPathForDoubling = state.get("folderPathForDoubling")
+        print(
+            f"{folderPathForDoubling} isn't directory. Please, set directory for doubling")
+        exit(2)
+
+
+def cpForDoublingToDoubling(state):
+    folderPathForDoubling = state.get("folderPathForDoubling")
+    folderPathDoubling = state.get("folderPathDoubling")
+
+    code = os.system(f"cp -a {folderPathForDoubling} {folderPathDoubling}")
+
+    if code == 0:
+        return state
+    else:
+        exit(3)
+
+
+def unfoldSymlinks(state):
+    folderPathDoubling = state.get("folderPathDoubling")
+
+    for (dirpath, dirnames, filenames) in os.walk(folderPathDoubling, True, None, True):
+        if os.path.islink(dirpath):
+            dirparent = getRealDirParent(dirpath)
+            os.system(f"cp -a {dirpath}/* {dirparent}")
+            print(f"unfold -> cp -a {dirpath}/* {dirparent}")
+
+    return state
+
+
+def removeSymlinks(state):
+    folderPathDoubling = state.get("folderPathDoubling")
+
+    for (dirpath, dirnames, filenames) in os.walk(folderPathDoubling, True, None, True):
+        if os.path.islink(dirpath):
+            os.unlink(dirpath)
+            print(dirpath, "-> link removed")
+
+    return state
+
+
+removeSymlinks(
+    unfoldSymlinks(
+        cpForDoublingToDoubling(
+            isDir(
+                getFolderForDoubling({})
+            )
+        )
+    )
+)
