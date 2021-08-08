@@ -1,0 +1,77 @@
+#!/usr/bin/env python
+
+from os import unlink
+from os.path import abspath
+import sys
+import setup
+from state import state, ENTRIES_LEN, LAST_ENTRY, LAST_ENTRY_POS
+from util import copyEntity, entityPathByIdx
+from constants import STASH_DIR, STASH_ENTRIES_DIR, STASH_SCHEMA_FILE
+
+
+arg = sys.argv[1]
+
+# pop scenario
+
+if arg == 'pop':
+    entriesLen = state[ENTRIES_LEN]
+    lastEntryPos = state[LAST_ENTRY_POS]
+    
+    try:
+        schemaFile = open(STASH_SCHEMA_FILE, 'r+')
+    except:
+        print("please, add something to stash")
+        exit(1)
+
+    schemaFile.seek(lastEntryPos)
+
+    srcEntityPath = entityPathByIdx(entriesLen)
+    destEntityPath = schemaFile.read().strip()
+
+    copyEntity(srcEntityPath, destEntityPath)
+
+    unlink(srcEntityPath)
+
+    schemaFile.seek(lastEntryPos)
+    schemaFile.truncate()
+    schemaFile.seek(0)
+
+    for entry in schemaFile:
+        lastEntry = entry 
+
+    if not 'lastEntry' in locals(): # schema file is empty
+        lastEntry = ''
+        unlink(STASH_SCHEMA_FILE)
+
+    state[ENTRIES_LEN] -= 1
+    state[LAST_ENTRY] = lastEntry.strip()
+    state[LAST_ENTRY_POS] = schemaFile.tell() - len(lastEntry)
+
+    state.save()
+    schemaFile.close()
+    print(f'your file {destEntityPath} pop successfully')
+    exit(0)
+
+
+# stash scenario
+
+entry = abspath(arg)
+srcEntityPath = entry
+
+with open(STASH_SCHEMA_FILE, 'a') as schemaFile:
+    lastEntryPos = schemaFile.tell()
+
+    schemaFile.write(entry + '\n')
+
+    state[ENTRIES_LEN] += 1
+    state[LAST_ENTRY] = entry
+    state[LAST_ENTRY_POS] = lastEntryPos
+
+destEntityPath = entityPathByIdx(state[ENTRIES_LEN])
+copyEntity(srcEntityPath, destEntityPath)
+
+unlink(srcEntityPath)
+
+state.save()
+print(f'your entity {entry} stashed successfully')
+exit(0)
