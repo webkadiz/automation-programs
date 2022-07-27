@@ -1,0 +1,12 @@
+#!/usr/bin/python
+
+import os
+import sys
+
+f = open(sys.argv[1], 'r', encoding='cp866')
+content = f.read()
+utf8Content = content.encode('utf8')
+
+filename = os.path.splitext(sys.argv[1])[0]
+f = open(sys.argv[1], 'wb')
+f.write(utf8Content)
